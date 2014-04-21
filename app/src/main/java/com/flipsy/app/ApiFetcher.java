@@ -54,8 +54,8 @@ public class ApiFetcher {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public ArrayList<FlipsyObject> getItems() {
-        ArrayList<FlipsyObject> listings = new ArrayList<FlipsyObject>();
+    public ArrayList<FlipsyItem> getItems() {
+        ArrayList<FlipsyItem> listings = new ArrayList<FlipsyItem>();
         try{
             String url = Uri.parse(ENDPOINT).buildUpon()
                     .appendQueryParameter("api_key", API_KEY)
@@ -79,7 +79,7 @@ public class ApiFetcher {
         return listings;
     }
 
-    void makeJSON(ArrayList<FlipsyObject> listings, JSONObject data) throws JSONException {
+    void makeJSON(ArrayList<FlipsyItem> listings, JSONObject data) throws JSONException {
         JSONArray parseJson = data.getJSONArray("results");
 
         for (int i=0; i < parseJson.length(); i++) {
@@ -99,10 +99,10 @@ public class ApiFetcher {
             String image_url = (listing_url + "_fullxfull");
             i++;
 
-            FlipsyObject newListing = new FlipsyObject();
+            FlipsyItem newListing = new FlipsyItem();
             newListing.setTitle(title);
             newListing.setUrl(listing_url);
-            newListing.setId(listing_id);
+            newListing.setListing_id(listing_id);
             newListing.setPrice(price);
             newListing.setImageUrl(image_url);
             listings.add(newListing);

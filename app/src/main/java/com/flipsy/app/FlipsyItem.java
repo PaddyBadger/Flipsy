@@ -1,10 +1,15 @@
 package com.flipsy.app;
 
 /**
+ * Created by patriciaestridge on 4/21/14.
+ */
+import android.support.v4.app.Fragment;
+
+/**
  * Created by patriciaestridge on 4/19/14.
  */
 
-public class FlipsyObject {
+public class FlipsyItem extends Fragment {
     long listing_id;
     String title;
     String url;
@@ -24,11 +29,11 @@ public class FlipsyObject {
         this.title = title;
     }
 
-    public long getId() {
+    public long getListing_idId() {
         return listing_id;
     }
 
-    public void setId(long listing_id) { this.listing_id = listing_id; }
+    public void setListing_id(long listing_id) { this.listing_id = listing_id; }
 
     public String getUrl() {
         return url;
