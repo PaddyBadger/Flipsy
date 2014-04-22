@@ -1,11 +1,14 @@
 package com.flipsy.app;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ public class GalleryFragment extends Fragment {
     private View v;
     public static final String ARG_PAGE = "page";
     private int mPageNumber;
+    ItemThumbnailDownloader<ImageView> mThumbnailThread;
 
 
     public static GalleryFragment create(int pageNumber) {
@@ -37,13 +41,35 @@ public class GalleryFragment extends Fragment {
 
         setRetainInstance(true);
         fetchItems = new FetchItemsTask().execute();
+
+        mThumbnailThread = new ItemThumbnailDownloader<ImageView>(new Handler());
+        mThumbnailThread.setListener(new ItemThumbnailDownloader.Listener<ImageView>() {
+            public void onThumbnailDownloaded(ImageView imageView, Bitmap thumbnail) {
+                if (isVisible()) {
+                    imageView.setImageBitmap(thumbnail);
+                }
+            }
+        });
+        mThumbnailThread.start();
+        mThumbnailThread.getLooper();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.gallery_fragment, container, false);
-
-        setupAdapter();
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mThumbnailThread.clearQueue();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mThumbnailThread.quit();
     }
 
     public void onPause() {
@@ -58,6 +84,11 @@ public class GalleryFragment extends Fragment {
         if (mItems != null) {
             TextView titleTextView = (TextView) v.findViewById(R.id.title);
             titleTextView.setText(mItems.get(mPageNumber).toString());
+
+            ImageView imageView = (ImageView)v.findViewById(R.id.item_imageView);
+            imageView.setImageResource(R.drawable.rio);
+            FlipsyItem item = mItems.get(mPageNumber);
+            mThumbnailThread.queueThumbnail(imageView, item.getImageUrl());
         }
     }
 

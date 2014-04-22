@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
 
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
-    private int NUM_CARDS = 100;
+    private int NUM_CARDS = 40;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(25);
+        mPager.setOffscreenPageLimit(2);
         mPager.setPageTransformer(true, new PageTransformer());
     }
 
