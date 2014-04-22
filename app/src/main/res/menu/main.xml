@@ -1,9 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.flipsy.app.MainActivity" >
-    
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+    tools:context="com.naughtyfrench.app.FrenchSlidesActivity" >
+
+    <item android:id="@+id/action_previous"
+        android:title="@string/action_previous"
+        android:showAsAction="ifRoom|withText" />
+
+    <item android:id="@+id/action_next"
+        android:title="@string/action_next"
+        android:showAsAction="ifRoom|withText" />
 </menu>

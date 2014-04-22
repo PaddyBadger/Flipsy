@@ -3,13 +3,11 @@ package com.flipsy.app;
 /**
  * Created by patriciaestridge on 4/21/14.
  */
-import android.support.v4.app.Fragment;
-
 /**
  * Created by patriciaestridge on 4/19/14.
  */
 
-public class FlipsyItem extends Fragment {
+public class FlipsyItem {
     long listing_id;
     String title;
     String url;
@@ -17,7 +15,7 @@ public class FlipsyItem extends Fragment {
     String imageUrl;
 
     public String toString() {
-        String listing = title + price;
+        String listing = title + " " + price;
         return listing;
     }
 
