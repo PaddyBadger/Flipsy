@@ -13,14 +13,16 @@ public class FlipsyItem {
     String url;
     String price;
     String imageUrl;
-
-    public String toString() {
-        String listing = title + " " + price;
-        return listing;
-    }
+    String description;
 
     public String getTitle() {
-        return title;
+        String itemTitle;
+        if(title.length() > 50) {
+            itemTitle = title.substring(0, 50);
+        } else {
+            itemTitle = title;
+        }
+        return itemTitle;
     }
 
     public void setTitle(String title) {
@@ -55,5 +57,13 @@ public class FlipsyItem {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

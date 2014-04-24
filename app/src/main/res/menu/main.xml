@@ -1,12 +1,12 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.naughtyfrench.app.FrenchSlidesActivity" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/action_previous"
-        android:title="@string/action_previous"
-        android:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_item_search"
+        android:title="@string/search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="ifRoom" />
 
-    <item android:id="@+id/action_next"
-        android:title="@string/action_next"
-        android:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_item_clear"
+        android:title="@string/clear_search"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:showAsAction="ifRoom" />
 </menu>

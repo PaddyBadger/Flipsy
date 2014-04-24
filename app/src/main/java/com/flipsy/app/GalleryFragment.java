@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -39,6 +42,7 @@ public class GalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mPageNumber = getArguments().getInt(ARG_PAGE);
 
+        setHasOptionsMenu(true);
         setRetainInstance(true);
         fetchItems = new FetchItemsTask().execute();
 
@@ -60,11 +64,30 @@ public class GalleryFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_search:
+                getActivity().onSearchRequested();
+                return true;
+            case R.id.menu_item_clear:
+                return true;
+            default:
+            return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mThumbnailThread.clearQueue();
     }
-
 
     @Override
     public void onDestroy() {
@@ -82,20 +105,38 @@ public class GalleryFragment extends Fragment {
         if (getActivity() == null) return;
 
         if (mItems != null) {
+
+            FlipsyItem item = mItems.get(mPageNumber);
+
             TextView titleTextView = (TextView) v.findViewById(R.id.title);
-            titleTextView.setText(mItems.get(mPageNumber).toString());
+            String title = item.getTitle();
+            titleTextView.setText(title);
 
             ImageView imageView = (ImageView)v.findViewById(R.id.item_imageView);
-            imageView.setImageResource(R.drawable.rio);
-            FlipsyItem item = mItems.get(mPageNumber);
             mThumbnailThread.queueThumbnail(imageView, item.getImageUrl());
+
+            TextView priceTextView = (TextView) v.findViewById(R.id.price);
+            String price = item.getPrice();
+            priceTextView.setText(price);
+
+            TextView descriptionTextView = (TextView) v.findViewById(R.id.description);
+            String description = item.getDescription();
+            descriptionTextView.setText(description);
+
+
         }
     }
 
     private class FetchItemsTask extends AsyncTask<Void, Void, ArrayList<FlipsyItem>> {
         @Override
         protected ArrayList<FlipsyItem> doInBackground(Void... params) {
-            return new ApiFetcher().getItems();
+            String query = "bags";
+
+            if (query != null) {
+                return new ApiFetcher().search(query);
+            } else {
+                return new ApiFetcher().getItems();
+            }
         }
 
         @Override

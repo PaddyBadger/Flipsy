@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.util.LruCache;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class ItemThumbnailDownloader <Token> extends HandlerThread {
     private static final String TAG = "ThumbnailDownloader";
     private static final int MESSAGE_DOWNLOAD = 0;
+    private LruCache<String, Bitmap> mMemoryCache;
 
     Handler mHandler;
     Handler mResponseHandler;
@@ -40,20 +42,37 @@ public class ItemThumbnailDownloader <Token> extends HandlerThread {
 
     @Override
     protected void onLooperPrepared() {
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == MESSAGE_DOWNLOAD) {
                     Token token = (Token)msg.obj;
-                    Log.i(TAG, "got a request for url: " + requestMap.get(token));
                     handleRequest(token);
                 }
             }
         };
     }
 
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
     public void queueThumbnail(Token token, String url) {
-        Log.i(TAG, "Got a URL: " + url);
         requestMap.put(token, url);
 
         mHandler
@@ -64,12 +83,20 @@ public class ItemThumbnailDownloader <Token> extends HandlerThread {
     private void handleRequest(final Token token) {
         try {
             final String url = requestMap.get(token);
+            final Bitmap bitmapCache = getBitmapFromMemCache(url);
+            final Bitmap bitmap;
+
             if (url == null)
                 return;
 
-            byte[] bitmapBytes = new ApiFetcher().getUrlBytes(url);
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-            Log.i(TAG, "bitmap created");
+            if (bitmapCache != null) {
+                bitmap = bitmapCache;
+            } else {
+
+                byte[] bitmapBytes = new ApiFetcher().getUrlBytes(url);
+                bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                addBitmapToMemoryCache(url, bitmap);
+            }
 
             mResponseHandler.post(new Runnable() {
                 public void run() {
