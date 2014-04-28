@@ -3,10 +3,14 @@ package com.flipsy.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.SearchManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 
 public class MainActivity extends Activity {
@@ -23,7 +27,6 @@ public class MainActivity extends Activity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(5);
         mPager.setPageTransformer(true, new PageTransformer());
     }
 
@@ -34,6 +37,25 @@ public class MainActivity extends Activity {
         } else {
             mPager.setCurrentItem(mPager.getCurrentItem()-1);
         }
+    }
+
+    public void onNewIntent(Intent intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Log.i("Does a new intent ever get called", " " + intent);
+        GalleryFragment fragment = (GalleryFragment) getFragmentManager().findFragmentById(R.id.pager);
+        Log.i("Do I get this far?", ""+intent);
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.i("Search", "Is starting to take shape " + query);
+
+            PreferenceManager.getDefaultSharedPreferences(this)
+                    .edit()
+                    .putString(ApiFetcher.SEARCH_QUERY, query)
+                    .commit();
+        }
+        mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
+        fragment.updateItems();
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

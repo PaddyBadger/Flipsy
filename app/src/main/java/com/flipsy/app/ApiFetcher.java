@@ -25,6 +25,7 @@ public class ApiFetcher {
     private static final String ENDPOINT = "https://openapi.etsy.com/v2/listings/active?api_key=";
     private static final String METHOD = "GET";
     private static final String LIMIT = "100";
+    public static final String SEARCH_QUERY = "SearchQuery";
     private static final String TAG = "API FETCHER";
 
     byte[] getUrlBytes(String urlSpec) throws IOException {
